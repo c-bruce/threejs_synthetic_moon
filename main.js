@@ -47,27 +47,29 @@ let lightControlsObject = { longitude: 0, latitude: 0, intensity: 5};
 // Setup moon mesh
 const geometry = new THREE.SphereGeometry(1728.28, 4000, 2000);
 const textureLoader = new THREE.TextureLoader();
-const texture = textureLoader.load('/moon_texture.tif');
-const displacement = textureLoader.load('/scaled_moon_displacement.tiff');
+const texture = textureLoader.load('/moon_texture.png');
+const displacement = textureLoader.load('/scaled_moon_displacement.png');
 const normal = textureLoader.load('/moon_normal_map.png');
 
 texture.minFilter = THREE.LinearFilter;
 displacement.minFilter = THREE.LinearFilter;
 normal.minFilter = THREE.LinearFilter;
 
+const scale = 19.87;
+
 const material = new THREE.MeshPhysicalMaterial({
     color: 0xffffff,
     map: texture,
     displacementMap: displacement,
     normalMap: normal,
-    displacementScale: 19.87,
+    displacementScale: scale,
     reflectivity: 0,
     shininess: 0
 });
 
 const mesh = new THREE.Mesh(geometry, material);
 scene.add(mesh);
-const meshControlsObject = { rotationX: 0, rotationY: 0, rotationZ: 0, displacementScale: 19.87 };
+const meshControlsObject = { rotationX: 0, rotationY: 0, rotationZ: 0, displacementScale: scale };
 
 // Setup GUI controls
 const gui = new dat.GUI();
