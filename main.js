@@ -57,19 +57,20 @@ normal.minFilter = THREE.LinearFilter;
 
 const scale = 19.87;
 
-const material = new THREE.MeshPhysicalMaterial({
+const material = new THREE.MeshLambertMaterial({
     color: 0xffffff,
     map: texture,
     displacementMap: displacement,
-    normalMap: normal,
     displacementScale: scale,
+    normalMap: normal,
+    normalScale: new THREE.Vector2(1.0, 1.0),
     reflectivity: 0,
     shininess: 0
 });
 
 const mesh = new THREE.Mesh(geometry, material);
 scene.add(mesh);
-const meshControlsObject = { rotationX: 0, rotationY: 0, rotationZ: 0, displacementScale: scale };
+const meshControlsObject = { rotationX: 0, rotationY: 0, rotationZ: 0, displacementScale: scale, normalScale: 1.0 };
 
 // Setup GUI controls
 const gui = new dat.GUI();
@@ -77,14 +78,14 @@ const gui = new dat.GUI();
 // Light controls
 const lightControls = gui.addFolder('Light Controls');
 const lightLongitude = lightControls.add(lightControlsObject, 'longitude', -180, 180).name('Longitude');
-const lightLatitude = lightControls.add(lightControlsObject, 'latitude', -180, 180).name('Latitude');
+const lightLatitude = lightControls.add(lightControlsObject, 'latitude', -90, 90).name('Latitude');
 const lightIntensity = lightControls.add(lightControlsObject, 'intensity', 0, 10).name('Intensity');
 lightControls.open();
 
 // Camera controls
 const cameraControls = gui.addFolder('Camera Controls');
 const cameraLongitude = cameraControls.add(cameraControlsObject, 'longitude', -180, 180).name('Longitude');
-const cameraLatitude = cameraControls.add(cameraControlsObject, 'latitude', -180, 180).name('Latitude');
+const cameraLatitude = cameraControls.add(cameraControlsObject, 'latitude', -90, 90).name('Latitude');
 const cameraRadius = cameraControls.add(cameraControlsObject, 'radius', 0, 10000).name('Radius');
 const cameraLookAtCenter = cameraControls.add(cameraControlsObject, 'lookAtCenter').name('Look At Center');
 const cameraRotationX = cameraControls.add(cameraControlsObject, 'rotationX', -180, 180).name('X Rotation');
@@ -98,6 +99,7 @@ const meshRotationX = meshControls.add(meshControlsObject, 'rotationX', -180, 18
 const meshRotationY = meshControls.add(meshControlsObject, 'rotationY', -180, 180).name('Y Rotation');
 const meshRotationZ = meshControls.add(meshControlsObject, 'rotationZ', -180, 180).name('Z Rotation');
 const displacementScale = meshControls.add(meshControlsObject, 'displacementScale', 0, 2000).name('Displacement Scale');
+const normalScale = meshControls.add(meshControlsObject, 'normalScale', 0, 10).name('Normal Scale');
 meshControls.open();
 
 // Function to update light controls from GUI sliders
@@ -152,10 +154,12 @@ function updateMeshControlsFromGUI() {
     const rotationX = meshRotationX.getValue();
     const rotationY = meshRotationY.getValue();
     const rotationZ = meshRotationZ.getValue();
+    const normalScaleValue = normalScale.getValue();
     mesh.rotation.x = rotationX * Math.PI/180;
     mesh.rotation.y = rotationY * Math.PI/180;
     mesh.rotation.z = rotationZ * Math.PI/180;
     material.displacementScale = displacementScale.getValue();
+    material.normalScale = new THREE.Vector2(normalScaleValue, normalScaleValue);
 }
 
 // Event listeners for GUI control changes
@@ -176,6 +180,7 @@ meshRotationX.onChange(updateMeshControlsFromGUI);
 meshRotationY.onChange(updateMeshControlsFromGUI);
 meshRotationZ.onChange(updateMeshControlsFromGUI);
 displacementScale.onChange(updateMeshControlsFromGUI);
+normalScale.onChange(updateMeshControlsFromGUI);
 
 function animate() {
     requestAnimationFrame(animate);
