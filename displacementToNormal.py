@@ -1,3 +1,4 @@
+import sys
 import numpy as np
 from PIL import Image
 
@@ -31,17 +32,23 @@ def export_normal_map(normal_map, file_path):
 
     # Convert to uint8 and create image
     normal_image = Image.fromarray(scaled_normal_map.astype(np.uint8))
-    
+
     # Save the image
-    normal_image.save(file_path)
+    normal_image.save(file_path + '.png')
 
-# Load the displacement map
-pixel_length_km = ((2 * np.pi * 1737.1) / 360) / 64
-displacement_map = np.array(Image.open("moon_displacement.tiff"))
-scaled_displacement_map = displacement_map / pixel_length_km
+def main(input_file, output_file):
+    # Load the displacement map
+    pixel_length_km = ((2 * np.pi * 1737.1) / 360) / 64
+    displacement_map = np.array(Image.open(input_file))
+    scaled_displacement_map = displacement_map / pixel_length_km
 
-# Calculate the normal map
-normal_map = calculate_normal_map(displacement_map)
+    # Calculate the normal map
+    normal_map = calculate_normal_map(scaled_displacement_map)
 
-# Export the normal map
-export_normal_map(normal_map, "moon_normal_map.png")
+    # Export the normal map
+    export_normal_map(normal_map, output_file)
+
+if __name__ == "__main__":
+    input_file = sys.argv[1]
+    output_file = sys.argv[2]
+    main(input_file, output_file)

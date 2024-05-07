@@ -4,11 +4,30 @@
 ## Textures
 All textures used in `threejs_synthetic_moon` originate from [NASAs CGI Moon Kit](https://svs.gsfc.nasa.gov/cgi-bin/details.cgi?aid=4720). These textures are too large to host as part of this repo so need to be downloaded separately.
 
-`moon_texture.tif` is the [27360x13680 NASA color map](https://svs.gsfc.nasa.gov/vis/a000000/a004700/a004720/lroc_color_poles.tif).
+`moon_texture.png` is the [27360x13680 NASA color map](https://svs.gsfc.nasa.gov/vis/a000000/a004700/a004720/lroc_color_poles.tif). We need to convert this `.tif` file into a `.png`. This is done by running:
 
-`scaled_moon_displacement.tiff` is a scaled version of the [23040x11520 NASA displacement map](https://svs.gsfc.nasa.gov/vis/a000000/a004700/a004720/ldem_64.tif) (scaled between 0.0 and 1.0). This can calculated by running `scaleDisplacementMap.py`.
+```
+python3 convertToPng.py lroc_color_poles.tif moon_texture
+```
 
-`moon_normal_map.png` is a normal map calculated from the [23040x11520 NASA displacement map](https://svs.gsfc.nasa.gov/vis/a000000/a004700/a004720/ldem_64.tif). This can be calculated by running `displacementToNormal.py`.
+`scaled_moon_displacement.png` is a scaled version of the [23040x11520 NASA displacement map](https://svs.gsfc.nasa.gov/vis/a000000/a004700/a004720/ldem_64.tif) (scaled between 0 and 255). This can calculated (anf converted into a `.png`) by running:
+
+```
+python3 scaleDisplacementMap.py ldem_64.tif scaled_moon_displacement
+```
+
+`moon_normal_map.png` is a normal map calculated from the [23040x11520 NASA displacement map](https://svs.gsfc.nasa.gov/vis/a000000/a004700/a004720/ldem_64.tif). To generate the normal map, run:
+
+```
+python3 displacementToNormal.py ldem_64.tif moon_normal_map
+```
+
+## Dependencies
+`threejs_synthetic_moon` requires `three` and `dat.gui`. These can be installed by running:
+```
+npm install --save three
+npm install --save dat.gui
+```
 
 ## Running
 From the `threejs_synthetic_moon` directory run:
