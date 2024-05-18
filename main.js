@@ -13,6 +13,30 @@ function sphericalToCartesian(longitude, latitude, radius) {
     return { x, y, z };
 }
 
+// Helper function for getting camera info in selenographic coordinates
+function getCameraInfoInWorldCoordinates(camera) {    
+    const position = new THREE.Vector3();
+    camera.getWorldPosition(position);
+    const posX = position.x.toFixed(4);
+    const posY = -position.z.toFixed(4);
+    const posZ = position.y.toFixed(4);
+    
+    const worldDirection = new THREE.Vector3();
+    camera.getWorldDirection(worldDirection);
+    const dirX = worldDirection.x.toFixed(4);
+    const dirY = -worldDirection.z.toFixed(4);
+    const dirZ = worldDirection.y.toFixed(4);
+
+    const localUp = new THREE.Vector3(0, -1, 0);
+    const worldUp = new THREE.Vector3();
+    worldUp.copy(localUp).applyQuaternion(camera.quaternion);
+    const upX = worldUp.x.toFixed(4);
+    const upY = -worldUp.z.toFixed(4);
+    const upZ = worldUp.y.toFixed(4);
+
+    return `${posX}_${posY}_${posZ}_${dirX}_${dirY}_${dirZ}_${upX}_${upY}_${upZ}`;
+}
+
 // Setup scene, renderer, camera and light
 const scene = new THREE.Scene();
 
@@ -21,12 +45,12 @@ const renderer = new THREE.WebGLRenderer({
     encoding: THREE.sRGBEncoding,
     toneMapping: THREE.ACESFilmicToneMapping
 });
-renderer.setSize(window.innerWidth, window.innerHeight);
+
+renderer.setSize(1024, 1024);
 document.body.appendChild(renderer.domElement);
 
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
+const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 10000);
 camera.position.z = 3000;
-camera.setFocalLength(35);
 let cameraControlsObject = {
     longitude: 0,
     latitude: 0,
@@ -101,6 +125,22 @@ const meshRotationZ = meshControls.add(meshControlsObject, 'rotationZ', -180, 18
 const displacementScale = meshControls.add(meshControlsObject, 'displacementScale', 0, 2000).name('Displacement Scale');
 const normalScale = meshControls.add(meshControlsObject, 'normalScale', 0, 10).name('Normal Scale');
 meshControls.open();
+
+gui.add({ takeScreenshot: () => takeScreenshot() }, 'takeScreenshot').name('Take Screenshot');
+
+// Function to capture screenshot
+// Images are saved with the following naming convention:
+// camera_posX_posY_posZ_dirX_dirY_dirZ_upX_upY_upZ_light_long_lat.png
+function takeScreenshot() {
+    renderer.render(scene, camera);
+    renderer.domElement.toBlob(function(blob){
+        var a = document.createElement('a');
+      var url = URL.createObjectURL(blob);
+      a.href = url;
+      a.download = `${getCameraInfoInWorldCoordinates(camera)}_${lightControlsObject['longitude']}_${lightControlsObject['latitude']}.png`;
+      a.click();
+    }, 'image/png', 1.0);
+}
 
 // Function to update light controls from GUI sliders
 function updateLightControlsFromGUI() {
