@@ -137,7 +137,7 @@ function takeScreenshot() {
         var a = document.createElement('a');
       var url = URL.createObjectURL(blob);
       a.href = url;
-      a.download = `${getCameraInfoInWorldCoordinates(camera)}_${lightControlsObject['longitude']}_${lightControlsObject['latitude']}.png`;
+      a.download = `${getCameraInfoInWorldCoordinates(camera)}_${lightControlsObject['longitude'].toFixed(4)}_${lightControlsObject['latitude'].toFixed(4)}.png`;
       a.click();
     }, 'image/png', 1.0);
 }
