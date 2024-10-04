@@ -8,7 +8,7 @@ def calculate_normal_map(displacement_map):
     print('Calculating normal map...')
     # Calculate the gradient using central differences
     dz_dx = np.gradient(displacement_map, axis=1)
-    dz_dy = np.gradient(displacement_map, axis=0)
+    dz_dy = np.gradient(-displacement_map, axis=0)
 
     # Create grid of coordinates
     x = np.arange(displacement_map.shape[0])
@@ -38,8 +38,10 @@ def export_normal_map(normal_map, file_path):
 
 def main(input_file, output_file):
     # Load the displacement map
-    pixel_length_km = ((2 * np.pi * 1737.1) / 360) / 64
     displacement_map = np.array(Image.open(input_file))
+
+    # Scale the displacement map
+    pixel_length_km = ((2 * np.pi * 1737.1) / 360) / 64 # 64 pixels per degree
     scaled_displacement_map = displacement_map / pixel_length_km
 
     # Calculate the normal map
